@@ -32,4 +32,8 @@ public class Tile {
 	public void removeUnit() {
 		setUnit(null);
 	}
+
+	public boolean isAccessible() {
+		return getUnit() == null;
+	}
 }

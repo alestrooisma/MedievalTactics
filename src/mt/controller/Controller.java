@@ -102,6 +102,7 @@ public class Controller implements Runnable{
 	public void selectUnit(Unit unit) {
 		setCameraPosition(unit.getPosition());
 		selectedUnit = unit;
+		moveMode = true;
 	}
 
 	public void deselectUnit() {
@@ -109,15 +110,17 @@ public class Controller implements Runnable{
 		selectedUnit = null;
 	}
 
-	public void moveSelectedUnit(Point tileCoords) {
+	public boolean moveSelectedUnit(Point tileCoords) {
 		double distance = Util.walkDistance(selectedUnit.getPosition(), tileCoords);
-		if (distance <= selectedUnit.getMovesRemaining()) {
+		if (getMap().getTile(tileCoords).isAccessible() 
+				&& distance <= selectedUnit.getMovesRemaining()) {
 			getMap().getTile(selectedUnit.getPosition()).removeUnit();
 			selectedUnit.setPosition(tileCoords);
 			getMap().getTile(tileCoords).setUnit(selectedUnit);
 			selectedUnit.reduceMoves(distance);
+			return true;
 		}
-		moveMode = false;
+		return false;
 	}
 	
 	public void toggleMoveMode() {

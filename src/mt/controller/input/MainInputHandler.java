@@ -40,11 +40,6 @@ public class MainInputHandler extends AbstractInputHandler implements MouseMotio
 			case KeyEvent.VK_ENTER:
 				controller.endTurn();
 				break;
-			case KeyEvent.VK_G:
-				if (controller.getSelectedUnit() != null) {
-					controller.toggleMoveMode();
-				}
-				break;
 		}
 	}
 
@@ -56,8 +51,7 @@ public class MainInputHandler extends AbstractInputHandler implements MouseMotio
 			tile = controller.getMap().getTile(tileCoords);
 			if (popupShown) {
 				popupShown = false;
-			} else if (controller.isInMoveMode()) {
-				controller.moveSelectedUnit(tileCoords);
+			} else if (controller.isInMoveMode() && controller.moveSelectedUnit(tileCoords)) {
 			} else if (tile.getUnit() != null) {
 				controller.selectUnit(tile.getUnit());
 			} else {
