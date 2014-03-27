@@ -6,15 +6,18 @@ import mt.model.Unit;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
+import java.awt.geom.Point2D;
 
 /**
  * Just a convenience class
  * @author Ale Strooisma
  */
-public class MainInputHandler extends AbstractInputHandler {
+public class MainInputHandler extends AbstractInputHandler implements MouseMotionListener {
 
 	private boolean popupShown = false;
 	private Tile tile;
+	private Point dragOrigin;
 
 	public MainInputHandler(Controller controller) {
 		super(controller);
@@ -47,9 +50,10 @@ public class MainInputHandler extends AbstractInputHandler {
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		Point tileCoords = controller.getGui().windowToTile(e.getPoint());
-		tile = controller.getMap().getTile(tileCoords);
+		dragOrigin = e.getPoint();
 		if (e.getButton() == MouseEvent.BUTTON1) {
+			Point tileCoords = controller.getGui().windowToTile(e.getPoint());
+			tile = controller.getMap().getTile(tileCoords);
 			if (popupShown) {
 				popupShown = false;
 			} else if (controller.isInMoveMode()) {
@@ -60,5 +64,20 @@ public class MainInputHandler extends AbstractInputHandler {
 				controller.deselectUnit();
 			}
 		}
+	}
+
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		if ((e.getModifiersEx() & MouseEvent.BUTTON1_DOWN_MASK) == MouseEvent.BUTTON1_DOWN_MASK) {
+			double distanceX = (double) (e.getPoint().x - dragOrigin.x) / 100;
+			double distanceY = (double) (e.getPoint().y - dragOrigin.y) / 100;
+			Point2D cpos = controller.getCameraPosition();
+			controller.setCameraPosition(new Point2D.Double(cpos.getX() - distanceX, cpos.getY() - distanceY));
+			dragOrigin = e.getPoint();
+		}
+	}
+
+	@Override
+	public void mouseMoved(MouseEvent e) {
 	}
 }

@@ -65,7 +65,7 @@ public class Controller implements Runnable{
 		return model.getMap();
 	}
 
-	public Army[] getArmys() {
+	public Army[] getArmies() {
 		return model.getArmies();
 	}
 
@@ -92,7 +92,7 @@ public class Controller implements Runnable{
 	}
 
 	public void setCameraPosition(Point2D cameraPosition) {
-		this.cameraPosition = cameraPosition;
+		this.cameraPosition.setLocation(cameraPosition);
 	}
 
 	public Unit getSelectedUnit() {
@@ -137,10 +137,14 @@ public class Controller implements Runnable{
 		startTurn(getCurrentArmy());
 	}
 
-	private void startTurn(Army civ) {
+	private void startTurn(Army army) {
 		if (getCurrentPlayer() == 0) {
 			model.incrementTurn();
 		}
 		turnStartTime = System.currentTimeMillis();
+		
+		for (Unit u : army.getUnits()) {
+			u.resetMoves();
+		}
 	}
 }

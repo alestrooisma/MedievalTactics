@@ -1,11 +1,13 @@
 package mt.view;
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.geom.Point2D;
-import javax.swing.BorderFactory;
+import mt.controller.Controller;
 import mt.controller.Resources;
+import mt.controller.Util;
 import mt.model.Map;
 import mt.model.Tile;
 
@@ -45,8 +47,9 @@ public class GameField extends Panel {
 
 	@Override
 	protected void render() {
+		correctCameraPosition();
 		offset = worldToWindow(ZERO);
-		
+
 		drawMap();
 		drawHUD();
 	}
@@ -57,11 +60,11 @@ public class GameField extends Panel {
 
 		Map map = gui.getController().getMap();
 
-		int bw = (map.getMinX() + map.getMaxX() + 1) * 100 + 1;
-		int bh = (map.getMinY() + map.getMaxY() + 1) * 100 + 1;
+		int bw = (map.getMinX() + map.getMaxX() + 1) * TILE_SIZE + 1;
+		int bh = (map.getMinY() + map.getMaxY() + 1) * TILE_SIZE + 1;
 		g.setColor(Color.BLACK);
 		g.drawRect(offset.x - 1, offset.y - 1, bh, bw);
-		
+
 		int vOffset = -offset.x;
 		int wOffset = -offset.y;
 
@@ -140,7 +143,11 @@ public class GameField extends Panel {
 
 		// Draw top unit
 		if (tile.getUnit() != null) {
-//			drawImage(Resources.units[tile.getUnits().getLast().getType()]);
+			if (tile.getUnit().getArmy() == gui.getController().getArmies()[0]) {
+				drawImage(Resources.unit);
+			} else {
+				drawImage(Resources.enemy);
+			}
 		}
 
 //		Point p = worldToWindow(tile.getPosition());
@@ -148,14 +155,14 @@ public class GameField extends Panel {
 //				+ " / " + String.format("%.2f", Util.distance(ZERO, tile.getPosition())),
 //				p.x, p.y);
 
-//		if (gui.getController().isInMoveMode()) {
-//			double distance = Util.walkDistance(
-//					gui.getController().getSelectedUnit().getPosition(),
-//					tile.getPosition());
-//			if (distance <= gui.getController().getSelectedUnit().getMovesRemaining()) {
-//				drawStringTL("" + distance, v, w);
-//			}
-//		}
+		if (gui.getController().isInMoveMode()) {
+			double distance = Util.walkDistance(
+					gui.getController().getSelectedUnit().getPosition(),
+					tile.getPosition());
+			if (distance <= gui.getController().getSelectedUnit().getMovesRemaining()) {
+				drawStringTL("" + distance, v, w);
+			}
+		}
 	}
 
 	protected void drawImage(Image img) {
@@ -191,20 +198,6 @@ public class GameField extends Panel {
 				(int) Math.ceil((worldCoordinates.getY() - camPos.getY() - 0.5) * TILE_SIZE + 0.5 * getSize().height));
 	}
 
-	// KEEP! might come in use later.
-//	private static int calculateOffset(double pos, double size, double min, double max) {
-//		//TODO change into a worldToCam and camToWorld converter
-//		if ((max - min) * TILE_SIZE < size) {
-//			return (int) ((0.5 * ((max - min) * TILE_SIZE - size)) + (min + 0.5) * TILE_SIZE);
-//		}
-//		if ((pos - min) * TILE_SIZE < 0.5 * size) {
-//			return (int) min * TILE_SIZE;
-//		} else if ((max - pos) * TILE_SIZE < 0.5 * size) {
-//			return (int) ((max + 1) * TILE_SIZE - size);
-//		} else {
-//			return (int) Math.ceil((pos + 0.5) * TILE_SIZE - 0.5 * size);
-//		}
-//	}
 	protected void calculateFrameRate() {
 		long next = System.nanoTime();
 		framerates[n] = ((double) 1000000000) / (next - last);
@@ -229,5 +222,30 @@ public class GameField extends Panel {
 		this.status = status;
 		this.fadeStatus = fade;
 		this.statusTime = System.currentTimeMillis();
+	}
+
+	private void correctCameraPosition() {
+		Point2D camPos = gui.getController().getCameraPosition();
+		double x = camPos.getX();
+		double y = camPos.getY();
+		Map map = gui.getController().getMap();
+
+		if (getWidth() > map.getWidth() * TILE_SIZE) {
+			x = map.getWidth() / 2 - 0.5;
+		} else if ((x + 0.5) * TILE_SIZE < getWidth() / 2) {
+			x = ((double) getWidth() / 2 - 0.5) / TILE_SIZE - 0.5;
+		} else if ((map.getWidth() - x - 0.5) * TILE_SIZE < getWidth() / 2) {
+			x = map.getWidth() - ((double) getWidth() / 2 - 1) / TILE_SIZE - 0.5;
+		}
+
+		if (getHeight() > map.getHeight() * TILE_SIZE) {
+			y = map.getHeight() / 2 - 0.5;
+		} else if ((y + 0.5) * TILE_SIZE < getHeight() / 2) {
+			y = ((double) getHeight() / 2 - 0.5) / TILE_SIZE - 0.5;
+		} else if ((map.getHeight() - y - 0.5) * TILE_SIZE < getHeight() / 2) {
+			y = map.getHeight() - ((double) getHeight() / 2 - 1) / TILE_SIZE - 0.5;
+		}
+
+		camPos.setLocation(x, y);
 	}
 }

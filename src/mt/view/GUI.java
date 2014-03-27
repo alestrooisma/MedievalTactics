@@ -51,6 +51,7 @@ public class GUI extends AbstractGUI implements ActionListener {
 		MainInputHandler handler = new MainInputHandler(controller);
 		frame.addKeyListener(handler);
 		gf.addMouseListener(handler);
+		gf.addMouseMotionListener(handler);
 
 		// Start drawing
 		frame.pack();

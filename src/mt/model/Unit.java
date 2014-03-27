@@ -106,6 +106,14 @@ public class Unit {
 		return unit;
 	}
 	
+	public static Unit createUnit(Army army, int type, 
+			double movesPerTurn, int strength, int maxHealth, Point pos, Map map) {
+		Unit unit = createUnit(army, type, movesPerTurn, strength, maxHealth);
+		unit.setPosition(pos);
+		map.getTile(pos).setUnit(unit);
+		return unit;
+	}
+	
 	public void destroy(Map map) {
 		getArmy().removeUnit(this);
 		map.getTile(getPosition()).removeUnit();

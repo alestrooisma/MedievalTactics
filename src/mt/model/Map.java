@@ -112,6 +112,14 @@ public class Map {
 	public int getMaxY() {
 		return maxY;
 	}
+	
+	public int getWidth() {
+		return minX + 1 + maxX;
+	}
+	
+	public int getHeight() {
+		return minY + 1 + maxY;
+	}
 
 	/**
 	 * Returns the array of tiles, which basically is the internal
