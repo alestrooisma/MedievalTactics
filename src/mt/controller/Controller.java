@@ -18,13 +18,17 @@ import mt.view.GUI;
  */
 public class Controller implements Runnable {
 
+	public static enum State {
+		NORMAL, MOVING, ATTACKING;
+	}
+
 	private Model model;
 	private GUI gui;
 	private Unit selectedUnit = null;
 	// Pending cleanup (i.e. not sure what to do with it)
 	private long turnStartTime;
-	private boolean moveMode = false;
 	private Point2D cameraPosition;
+	private State state = State.NORMAL;
 
 	public Controller(Model model, GUI gui, Point2D cameraPosition) {
 		this.model = model;
@@ -103,11 +107,11 @@ public class Controller implements Runnable {
 			setCameraPosition(unit.getPosition());
 		}
 		selectedUnit = unit;
-		moveMode = true;
+		state = State.MOVING;
 	}
 
 	public void deselectUnit() {
-		moveMode = false;
+		state = State.NORMAL;
 		selectedUnit = null;
 	}
 
@@ -124,12 +128,12 @@ public class Controller implements Runnable {
 		return false;
 	}
 
-	public void toggleMoveMode() {
-		moveMode = !moveMode;
+	public boolean isInMoveMode() {
+		return state == State.MOVING;
 	}
 
-	public boolean isInMoveMode() {
-		return moveMode;
+	public State getState() {
+		return state;
 	}
 
 	public void endTurn() {

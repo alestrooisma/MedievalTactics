@@ -7,6 +7,8 @@ import javax.imageio.ImageIO;
 
 public class Resources {
 	public static BufferedImage tileborder;
+	public static BufferedImage moveBorder;
+	public static BufferedImage attackBorder;
 	public static BufferedImage unit;
 	public static BufferedImage enemy;
 
@@ -14,7 +16,9 @@ public class Resources {
 	public static void loadResources() {
 		//TODO placeholder implementation: fix.
 		try {
-			tileborder = ImageIO.read(new File("assets/tileborder.png"));
+			tileborder = ImageIO.read(new File("assets/tileborder_black.png"));
+			moveBorder = ImageIO.read(new File("assets/tileborder_blue.png"));
+			attackBorder = ImageIO.read(new File("assets/tileborder_red.png"));
 			unit = ImageIO.read(new File("assets/unit.png"));
 			enemy = ImageIO.read(new File("assets/enemy.png"));
 		} catch (IOException ex) {

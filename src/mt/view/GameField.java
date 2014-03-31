@@ -1,11 +1,10 @@
 package mt.view;
 
 import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.geom.Point2D;
-import mt.controller.Controller;
+import mt.controller.Controller.State;
 import mt.controller.Resources;
 import mt.controller.Util;
 import mt.model.Map;
@@ -61,9 +60,9 @@ public class GameField extends Panel {
 		Map map = gui.getController().getMap();
 
 		g.setColor(Color.BLACK);
-		g.drawRect(offset.x - 1, offset.y - 1, 
-				(map.getMinX() + map.getMaxX() + 1) * TILE_SIZE + 1, 
-				 (map.getMinY() + map.getMaxY() + 1) * TILE_SIZE + 1);
+		g.drawRect(offset.x - 1, offset.y - 1,
+				(map.getMinX() + map.getMaxX() + 1) * TILE_SIZE + 1,
+				(map.getMinY() + map.getMaxY() + 1) * TILE_SIZE + 1);
 
 		int vOffset = -offset.x;
 		int wOffset = -offset.y;
@@ -128,7 +127,6 @@ public class GameField extends Panel {
 	private void drawTile(Tile tile) {
 
 		// Draw terrain background
-		drawImage(Resources.tileborder);
 //		switch (tile.getTerrain()) {
 //			case Tile.GRASSLAND:
 //				drawImage(Resources.grassland);
@@ -140,6 +138,27 @@ public class GameField extends Panel {
 //				drawImage(Resources.water);
 //				break;
 //		}
+
+		
+		double distance; 
+		if (gui.getController().getSelectedUnit() != null) {
+		distance = Util.walkDistance(
+				gui.getController().getSelectedUnit().getPosition(),
+				tile.getPosition());
+		} else {
+			distance = Double.MAX_VALUE;
+		}
+
+		// Draw border
+		if (gui.getController().getState() == State.MOVING
+				&& distance <= gui.getController().getSelectedUnit().getMovesRemaining()) {
+			drawImage(Resources.moveBorder);
+//			drawStringTL("" + distance, v, w);
+		} else if (gui.getController().getState() == State.ATTACKING) {
+			drawImage(Resources.attackBorder);
+		} else {
+			drawImage(Resources.tileborder);
+		}
 
 		// Draw top unit
 		if (tile.getUnit() != null) {
@@ -154,15 +173,6 @@ public class GameField extends Panel {
 //		drawStringTL("" + Util.distanceSquared(ZERO, tile.getPosition())
 //				+ " / " + String.format("%.2f", Util.distance(ZERO, tile.getPosition())),
 //				p.x, p.y);
-
-		if (gui.getController().isInMoveMode()) {
-			double distance = Util.walkDistance(
-					gui.getController().getSelectedUnit().getPosition(),
-					tile.getPosition());
-			if (distance <= gui.getController().getSelectedUnit().getMovesRemaining()) {
-				drawStringTL("" + distance, v, w);
-			}
-		}
 	}
 
 	protected void drawImage(Image img) {
@@ -231,7 +241,7 @@ public class GameField extends Panel {
 		Map map = gui.getController().getMap();
 
 		if (getWidth() > map.getWidth() * TILE_SIZE) {
-			x = (double)map.getWidth() / 2 - 0.5;
+			x = (double) map.getWidth() / 2 - 0.5;
 		} else if ((x + 0.5) * TILE_SIZE < getWidth() / 2) {
 			x = ((double) getWidth() / 2 - 0.5) / TILE_SIZE - 0.5;
 		} else if ((map.getWidth() - x - 0.5) * TILE_SIZE < getWidth() / 2) {
@@ -239,7 +249,7 @@ public class GameField extends Panel {
 		}
 
 		if (getHeight() > map.getHeight() * TILE_SIZE) {
-			y = (double)map.getHeight() / 2 - 0.5;
+			y = (double) map.getHeight() / 2 - 0.5;
 		} else if ((y + 0.5) * TILE_SIZE < getHeight() / 2) {
 			y = ((double) getHeight() / 2 - 0.5) / TILE_SIZE - 0.5;
 		} else if ((map.getHeight() - y - 0.5) * TILE_SIZE < getHeight() / 2) {
