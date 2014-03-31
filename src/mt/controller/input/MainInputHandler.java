@@ -56,7 +56,7 @@ public class MainInputHandler extends AbstractInputHandler implements MouseMotio
 			if (popupShown) {
 				popupShown = false;
 			} else if (tile != null && controller.isInMoveMode() && controller.moveSelectedUnit(tileCoords)) {
-			} else if (tile != null && tile.getUnit() != null) {
+			} else if (tile != null && tile.getUnit() != null && tile.getUnit().getArmy() == controller.getCurrentArmy()) {
 				controller.selectUnit(tile.getUnit());
 			} else {
 				controller.deselectUnit();
