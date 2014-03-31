@@ -48,11 +48,15 @@ public class MainInputHandler extends AbstractInputHandler implements MouseMotio
 		dragOrigin = e.getPoint();
 		if (e.getButton() == MouseEvent.BUTTON1) {
 			Point tileCoords = controller.getGui().windowToTile(e.getPoint());
-			tile = controller.getMap().getTile(tileCoords);
+			if (controller.getMap().contains(tileCoords)) {
+				tile = controller.getMap().getTile(tileCoords);
+			} else {
+				tile = null;
+			}
 			if (popupShown) {
 				popupShown = false;
-			} else if (controller.isInMoveMode() && controller.moveSelectedUnit(tileCoords)) {
-			} else if (tile.getUnit() != null) {
+			} else if (tile != null && controller.isInMoveMode() && controller.moveSelectedUnit(tileCoords)) {
+			} else if (tile != null && tile.getUnit() != null) {
 				controller.selectUnit(tile.getUnit());
 			} else {
 				controller.deselectUnit();

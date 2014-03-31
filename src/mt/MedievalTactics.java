@@ -18,7 +18,7 @@ public class MedievalTactics {
 	 * @param args the command line arguments
 	 */
 	public static void main(String[] args) {
-		int width = 12, height = 12;
+		int width = 11, height = 9;
 		Tile[] tiles = new Tile[width * height];
 		for (int i = 0; i < tiles.length; i++) {
 			tiles[i] = new Tile(new Point(i % width, i / width), 0);
@@ -26,12 +26,13 @@ public class MedievalTactics {
 		Map map = new Map(0, width - 1, 0, height - 1, tiles);
 
 		Army player = new Army("player1");
-		Unit.createUnit(player, 0, 3, 3, 3, new Point(4, 10), map);
-		Unit.createUnit(player, 0, 3, 3, 3, new Point(5, 10), map);
-		Unit.createUnit(player, 0, 3, 3, 3, new Point(8, 10), map);
+		Unit.createUnit(player, 0, 3.5, 3, 3, new Point(4, 7), map);
+		Unit.createUnit(player, 0, 3.5, 3, 3, new Point(5, 7), map);
+		Unit.createUnit(player, 0, 3.5, 3, 3, new Point(8, 7), map);
 		
 		Army enemy = new Army("AI enemy");
-		Unit.createUnit(enemy, 0, 3, 3, 3, new Point(0, 0), map);
+		Unit.createUnit(enemy, 0, 3.5, 3, 3, new Point(3, 1), map);
+		Unit.createUnit(enemy, 0, 3.5, 3, 3, new Point(4, 0), map);
 
 		GUI gui = new GUI();
 		Model model = new Model(map, new Army[]{player, enemy});

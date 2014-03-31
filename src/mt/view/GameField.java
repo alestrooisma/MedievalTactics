@@ -60,10 +60,10 @@ public class GameField extends Panel {
 
 		Map map = gui.getController().getMap();
 
-		int bw = (map.getMinX() + map.getMaxX() + 1) * TILE_SIZE + 1;
-		int bh = (map.getMinY() + map.getMaxY() + 1) * TILE_SIZE + 1;
 		g.setColor(Color.BLACK);
-		g.drawRect(offset.x - 1, offset.y - 1, bh, bw);
+		g.drawRect(offset.x - 1, offset.y - 1, 
+				(map.getMinX() + map.getMaxX() + 1) * TILE_SIZE + 1, 
+				 (map.getMinY() + map.getMaxY() + 1) * TILE_SIZE + 1);
 
 		int vOffset = -offset.x;
 		int wOffset = -offset.y;
@@ -231,7 +231,7 @@ public class GameField extends Panel {
 		Map map = gui.getController().getMap();
 
 		if (getWidth() > map.getWidth() * TILE_SIZE) {
-			x = map.getWidth() / 2 - 0.5;
+			x = (double)map.getWidth() / 2 - 0.5;
 		} else if ((x + 0.5) * TILE_SIZE < getWidth() / 2) {
 			x = ((double) getWidth() / 2 - 0.5) / TILE_SIZE - 0.5;
 		} else if ((map.getWidth() - x - 0.5) * TILE_SIZE < getWidth() / 2) {
@@ -239,7 +239,7 @@ public class GameField extends Panel {
 		}
 
 		if (getHeight() > map.getHeight() * TILE_SIZE) {
-			y = map.getHeight() / 2 - 0.5;
+			y = (double)map.getHeight() / 2 - 0.5;
 		} else if ((y + 0.5) * TILE_SIZE < getHeight() / 2) {
 			y = ((double) getHeight() / 2 - 0.5) / TILE_SIZE - 0.5;
 		} else if ((map.getHeight() - y - 0.5) * TILE_SIZE < getHeight() / 2) {

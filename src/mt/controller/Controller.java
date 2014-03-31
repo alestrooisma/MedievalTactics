@@ -16,7 +16,7 @@ import mt.view.GUI;
  *
  * @author ale
  */
-public class Controller implements Runnable{
+public class Controller implements Runnable {
 
 	private Model model;
 	private GUI gui;
@@ -86,7 +86,6 @@ public class Controller implements Runnable{
 	}
 
 	// Controller logic
-
 	public Point2D getCameraPosition() {
 		return cameraPosition;
 	}
@@ -100,7 +99,9 @@ public class Controller implements Runnable{
 	}
 
 	public void selectUnit(Unit unit) {
-		setCameraPosition(unit.getPosition());
+		if (Flags.CENTER_UPON_SELECT) {
+			setCameraPosition(unit.getPosition());
+		}
 		selectedUnit = unit;
 		moveMode = true;
 	}
@@ -112,7 +113,7 @@ public class Controller implements Runnable{
 
 	public boolean moveSelectedUnit(Point tileCoords) {
 		double distance = Util.walkDistance(selectedUnit.getPosition(), tileCoords);
-		if (getMap().getTile(tileCoords).isAccessible() 
+		if (getMap().getTile(tileCoords).isAccessible()
 				&& distance <= selectedUnit.getMovesRemaining()) {
 			getMap().getTile(selectedUnit.getPosition()).removeUnit();
 			selectedUnit.setPosition(tileCoords);
@@ -122,7 +123,7 @@ public class Controller implements Runnable{
 		}
 		return false;
 	}
-	
+
 	public void toggleMoveMode() {
 		moveMode = !moveMode;
 	}
@@ -145,7 +146,7 @@ public class Controller implements Runnable{
 			model.incrementTurn();
 		}
 		turnStartTime = System.currentTimeMillis();
-		
+
 		for (Unit u : army.getUnits()) {
 			u.resetMoves();
 		}

@@ -1,6 +1,7 @@
 package mt.model;
 
 import java.awt.Point;
+import java.awt.geom.Point2D;
 
 /**
  * An implementation of Map, being tiled map.
@@ -171,6 +172,19 @@ public class Map {
 	 */
 	public void setTile(Tile tile, Point position) {
 		setTile(tile, position.x, position.y);
+	}
+
+	/**
+	 * Returns true if the point specified by tileCoords is within the bounds of 
+	 * this map.
+	 * @param point the point to check
+	 * @return true if point is within the bounds
+	 */
+	public boolean contains(Point2D point) {
+		return point.getX() >= minX
+				&& point.getX() <= maxX
+				&& point.getY() >= minY
+				&& point.getY() <= maxY;
 	}
 
 	/**
