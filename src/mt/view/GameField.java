@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.geom.Point2D;
-import mt.controller.Controller.State;
+import mt.controller.Controller;
 import mt.controller.Resources;
 import mt.controller.Util;
 import mt.model.Map;
@@ -125,40 +125,37 @@ public class GameField extends Panel {
 	}
 
 	private void drawTile(Tile tile) {
+		Controller c = gui.getController();
+
+		// Pre-calculated some needed stuff
+		double distance = Double.MAX_VALUE;
+		double moveRange = 0;
+		double dashRange = 0;
+		if (c.getSelectedUnit() != null) {
+			distance = Util.walkDistance(
+					c.getSelectedUnit().getPosition(),
+					tile.getPosition());
+			moveRange = c.getSelectedUnit().getMovesRemaining();
+			if (c.getSelectedUnit().mayDash()) {
+				dashRange = moveRange + c.getSelectedUnit().getSpeed();
+			}
+		}
 
 		// Draw terrain background
-//		switch (tile.getTerrain()) {
-//			case Tile.GRASSLAND:
-//				drawImage(Resources.grassland);
-//				break;
-//			case Tile.PLAINS:
-//				drawImage(Resources.plains);
-//				break;
-//			case Tile.WATER:
-//				drawImage(Resources.water);
-//				break;
-//		}
+		g.setColor(Color.GRAY);
+		g.fillRect(v, w, TILE_SIZE, TILE_SIZE);
 
-		
-		double distance; 
-		if (gui.getController().getSelectedUnit() != null) {
-		distance = Util.walkDistance(
-				gui.getController().getSelectedUnit().getPosition(),
-				tile.getPosition());
-		} else {
-			distance = Double.MAX_VALUE;
+		// Draw movement overlay
+		if (c.getSelectedUnit() != null && distance <= moveRange) {
+			g.setColor(Color.BLUE);
+		} else if (c.getSelectedUnit() != null && distance <= dashRange) {
+			g.setColor(Color.YELLOW);
 		}
+		g.fillRect(v, w, TILE_SIZE, TILE_SIZE);
+		g.setColor(Color.BLACK);
 
 		// Draw border
-		if (gui.getController().getState() == State.MOVING
-				&& distance <= gui.getController().getSelectedUnit().getMovesRemaining()) {
-			drawImage(Resources.moveBorder);
-//			drawStringTL("" + distance, v, w);
-		} else if (gui.getController().getState() == State.ATTACKING) {
-			drawImage(Resources.attackBorder);
-		} else {
-			drawImage(Resources.tileborder);
-		}
+		drawImage(Resources.tileborder);
 
 		// Draw top unit
 		if (tile.getUnit() != null) {
@@ -168,11 +165,6 @@ public class GameField extends Panel {
 				drawImage(Resources.enemy);
 			}
 		}
-
-//		Point p = worldToWindow(tile.getPosition());
-//		drawStringTL("" + Util.distanceSquared(ZERO, tile.getPosition())
-//				+ " / " + String.format("%.2f", Util.distance(ZERO, tile.getPosition())),
-//				p.x, p.y);
 	}
 
 	protected void drawImage(Image img) {

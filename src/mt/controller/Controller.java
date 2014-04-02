@@ -19,9 +19,9 @@ import mt.view.GUI;
 public class Controller implements Runnable {
 
 	public static enum State {
+
 		NORMAL, MOVING, ATTACKING;
 	}
-
 	private Model model;
 	private GUI gui;
 	private Unit selectedUnit = null;
@@ -117,15 +117,26 @@ public class Controller implements Runnable {
 
 	public boolean moveSelectedUnit(Point tileCoords) {
 		double distance = Util.walkDistance(selectedUnit.getPosition(), tileCoords);
-		if (getMap().getTile(tileCoords).isAccessible()
-				&& distance <= selectedUnit.getMovesRemaining()) {
-			getMap().getTile(selectedUnit.getPosition()).removeUnit();
-			selectedUnit.setPosition(tileCoords);
-			getMap().getTile(tileCoords).setUnit(selectedUnit);
-			selectedUnit.reduceMoves(distance);
-			return true;
+		if (getMap().getTile(tileCoords).isAccessible()) {
+			if (distance <= selectedUnit.getMovesRemaining()) {
+				moveUnit(selectedUnit, tileCoords);
+				selectedUnit.reduceMoves(distance);
+				return true;
+			} else if (selectedUnit.mayDash()
+					&& distance <= selectedUnit.getMovesRemaining() + selectedUnit.getSpeed()) {
+				moveUnit(selectedUnit, tileCoords);
+				selectedUnit.setMovesRemaining(0);
+				selectedUnit.setHasDashed();
+				return true;
+			}
 		}
 		return false;
+	}
+
+	private void moveUnit(Unit u, Point tileCoords) {
+		getMap().getTile(u.getPosition()).removeUnit();
+		u.setPosition(tileCoords);
+		getMap().getTile(tileCoords).setUnit(u);
 	}
 
 	public boolean isInMoveMode() {
@@ -152,7 +163,7 @@ public class Controller implements Runnable {
 		turnStartTime = System.currentTimeMillis();
 
 		for (Unit u : army.getUnits()) {
-			u.resetMoves();
+			u.reset();
 		}
 	}
 }

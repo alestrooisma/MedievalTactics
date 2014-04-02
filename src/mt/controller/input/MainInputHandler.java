@@ -16,7 +16,6 @@ import java.awt.geom.Point2D;
 public class MainInputHandler extends AbstractInputHandler implements MouseMotionListener {
 
 	private boolean popupShown = false;
-	private Tile tile;
 	private Point dragOrigin;
 
 	public MainInputHandler(Controller controller) {
@@ -48,13 +47,14 @@ public class MainInputHandler extends AbstractInputHandler implements MouseMotio
 		dragOrigin = e.getPoint();
 		if (e.getButton() == MouseEvent.BUTTON1) {
 			Point tileCoords = controller.getGui().windowToTile(e.getPoint());
+			Tile tile = null;
 			if (controller.getMap().contains(tileCoords)) {
 				tile = controller.getMap().getTile(tileCoords);
-			} else {
-				tile = null;
 			}
 			if (popupShown) {
 				popupShown = false;
+			} else if (tile != null && controller.getSelectedUnit() != null && tile.getUnit() != null && tile.getUnit().getArmy() != controller.getCurrentArmy()) {
+				System.out.println("BOOM!");
 			} else if (tile != null && controller.isInMoveMode() && controller.moveSelectedUnit(tileCoords)) {
 			} else if (tile != null && tile.getUnit() != null && tile.getUnit().getArmy() == controller.getCurrentArmy()) {
 				controller.selectUnit(tile.getUnit());
