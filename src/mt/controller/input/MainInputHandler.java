@@ -39,6 +39,9 @@ public class MainInputHandler extends AbstractInputHandler implements MouseMotio
 			case KeyEvent.VK_ENTER:
 				controller.endTurn();
 				break;
+			case KeyEvent.VK_N:
+				controller.nextUnit();
+				break;
 		}
 	}
 
@@ -55,7 +58,7 @@ public class MainInputHandler extends AbstractInputHandler implements MouseMotio
 				popupShown = false;
 			} else if (tile != null && controller.getSelectedUnit() != null && tile.getUnit() != null && tile.getUnit().getArmy() != controller.getCurrentArmy()) {
 				System.out.println("BOOM!");
-			} else if (tile != null && controller.isInMoveMode() && controller.moveSelectedUnit(tileCoords)) {
+			} else if (tile != null && controller.getSelectedUnit() != null && controller.moveSelectedUnit(tileCoords)) {
 			} else if (tile != null && tile.getUnit() != null && tile.getUnit().getArmy() == controller.getCurrentArmy()) {
 				controller.selectUnit(tile.getUnit());
 			} else {

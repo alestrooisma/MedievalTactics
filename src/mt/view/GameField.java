@@ -22,7 +22,8 @@ public class GameField extends Panel {
 	 * (partially) a settings thing.
 	 */
 	public static final int TILE_SIZE = 100;
-	public static final int CITY_BAR_HEIGHT = 250;
+	public static final Color MOVE_COLOR = new Color(0, 0, 1, 0.7f);
+	public static final Color DASH_COLOR = new Color(1, 1, 0, 0.7f);
 	private long last = System.nanoTime();
 	private double framerate;
 	private double[] framerates = new double[60];
@@ -146,10 +147,18 @@ public class GameField extends Panel {
 		g.fillRect(v, w, TILE_SIZE, TILE_SIZE);
 
 		// Draw movement overlay
-		if (c.getSelectedUnit() != null && distance <= moveRange) {
-			g.setColor(Color.BLUE);
-		} else if (c.getSelectedUnit() != null && distance <= dashRange) {
-			g.setColor(Color.YELLOW);
+		if (c.getSelectedUnit() != null ) {
+			if (distance == 0) {
+				if (c.getSelectedUnit().getMovesRemaining() > 0) {
+					g.setColor(MOVE_COLOR);
+				} else if (c.getSelectedUnit().mayDash()) {
+					g.setColor(DASH_COLOR);
+				}
+			} else if (distance <= moveRange) {
+				g.setColor(MOVE_COLOR);
+			} else if (distance <= dashRange) {
+				g.setColor(DASH_COLOR);
+			}
 		}
 		g.fillRect(v, w, TILE_SIZE, TILE_SIZE);
 		g.setColor(Color.BLACK);

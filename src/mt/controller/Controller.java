@@ -7,6 +7,7 @@ package mt.controller;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ListIterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import mt.model.*;
@@ -17,18 +18,14 @@ import mt.view.GUI;
  * @author ale
  */
 public class Controller implements Runnable {
-
-	public static enum State {
-
-		NORMAL, MOVING, ATTACKING;
-	}
+	
 	private Model model;
 	private GUI gui;
 	private Unit selectedUnit = null;
+	private ListIterator<Unit> unitIterator;
 	// Pending cleanup (i.e. not sure what to do with it)
 	private long turnStartTime;
 	private Point2D cameraPosition;
-	private State state = State.NORMAL;
 
 	public Controller(Model model, GUI gui, Point2D cameraPosition) {
 		this.model = model;
@@ -103,15 +100,13 @@ public class Controller implements Runnable {
 	}
 
 	public void selectUnit(Unit unit) {
-		if (Flags.CENTER_UPON_SELECT) {
+		if (Flags.CENTER_UPON_SELECT && unit != null) {
 			setCameraPosition(unit.getPosition());
 		}
 		selectedUnit = unit;
-		state = State.MOVING;
 	}
 
 	public void deselectUnit() {
-		state = State.NORMAL;
 		selectedUnit = null;
 	}
 
@@ -139,14 +134,6 @@ public class Controller implements Runnable {
 		getMap().getTile(tileCoords).setUnit(u);
 	}
 
-	public boolean isInMoveMode() {
-		return state == State.MOVING;
-	}
-
-	public State getState() {
-		return state;
-	}
-
 	public void endTurn() {
 		// Finalize turn
 		deselectUnit();
@@ -165,5 +152,33 @@ public class Controller implements Runnable {
 		for (Unit u : army.getUnits()) {
 			u.reset();
 		}
+
+		nextUnit();
+	}
+
+	/* TODO interator-safe unit destruction for when unit gets destroyed in own turn
+	 * most likely with listIterator.remove, as it will only die when it is acting.
+	 */
+	public void nextUnit() {
+		if (unitIterator == null || unitIterator.hasNext() == false) {
+			unitIterator = getCurrentArmy().getUnits().listIterator();
+		}
+
+		Unit u = nextUnit2();
+		if (u == null) {
+			unitIterator = getCurrentArmy().getUnits().listIterator();
+			u = nextUnit2();
+		}
+		selectUnit(u);
+	}
+
+	private Unit nextUnit2() {
+		while (unitIterator.hasNext()) {
+			Unit next = unitIterator.next();
+			if (next.mayAct() || next.mayDash() || next.getMovesRemaining() >= 1) {
+				return next;
+			}
+		}
+		return null;
 	}
 }
