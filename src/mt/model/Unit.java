@@ -1,24 +1,19 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package mt.model;
 
 import java.awt.Point;
+import java.util.ArrayList;
 
-/**
- *
- * @author ale
- */
 public class Unit {
 
 	// Core fields
+	private String name;
 	private Army army;
 	private Point position;
 	//
 	// Stats
 	private int maxHealth;
 	private double speed;
+	private ArrayList<Action> actions;
 	//
 	// Current status
 	private int currentHealth;
@@ -26,10 +21,25 @@ public class Unit {
 	private boolean mayDash;
 	private boolean mayAct;
 
-	public Unit(Army army, double speed, int maxHealth) {
+	public Unit(String name, Army army, int maxHealth, double speed) {
+		//TODO how large pre-allocation size of actions?
+		//TODO 9-element quick-selection list and a large full list?
+		this(name, army, maxHealth, speed, new ArrayList<Action>(9));
+	}
+
+	protected Unit(String name, Army army, int maxHealth, double speed, ArrayList<Action> actions) {
+		this.name = name;
 		this.army = army;
-		this.speed = speed;
 		this.maxHealth = maxHealth;
+		this.speed = speed;
+		this.actions = actions;
+//		while (actions.size() < 9) {
+//			actions.add(null);
+//		}
+	}
+
+	public String getName() {
+		return name;
 	}
 
 	public Army getArmy() {
@@ -58,6 +68,21 @@ public class Unit {
 
 	public void setSpeed(double movesPerTurn) {
 		this.speed = movesPerTurn;
+	}
+
+	public Action getAction(int i) {
+		if (i > actions.size()) {
+			return null;
+		}
+		return actions.get(i - 1);
+	}
+
+	public boolean addAction(Action a) {
+		return actions.add(a);
+	}
+
+	public boolean removeAction(Action a) {
+		return actions.remove(a);
 	}
 
 	public int getCurrentHealth() {
@@ -114,17 +139,21 @@ public class Unit {
 		getArmy().removeUnit(this);
 		map.getTile(getPosition()).removeUnit();
 	}
+	
+	public boolean isEnemy(Unit unit) {
+		return getArmy().isEnemy(unit);
+	}
 
-	public static Unit createUnit(Army army, double speed, int maxHealth) {
-		Unit unit = new Unit(army, speed, maxHealth);
+	public static Unit createUnit(String name, Army army, int maxHealth, double speed) {
+		Unit unit = new Unit(name, army, maxHealth, speed);
 		unit.setCurrentHealth(maxHealth);
 		army.addUnit(unit);
 		return unit;
 	}
 
-	public static Unit createUnit(Army army, double speed, int maxHealth,
+	public static Unit createUnit(String name, Army army, int maxHealth, double speed,
 			Point pos, Map map) {
-		Unit unit = createUnit(army, speed, maxHealth);
+		Unit unit = createUnit(name, army, maxHealth, speed);
 		unit.setPosition(pos);
 		map.getTile(pos).setUnit(unit);
 		return unit;

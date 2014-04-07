@@ -39,8 +39,37 @@ public class MainInputHandler extends AbstractInputHandler implements MouseMotio
 			case KeyEvent.VK_ENTER:
 				controller.endTurn();
 				break;
+			case KeyEvent.VK_B:
+				break;
 			case KeyEvent.VK_N:
 				controller.nextUnit();
+				break;
+			case KeyEvent.VK_1:
+				controller.selectAction(1);
+				break;
+			case KeyEvent.VK_2:
+				controller.selectAction(2);
+				break;
+			case KeyEvent.VK_3:
+				controller.selectAction(3);
+				break;
+			case KeyEvent.VK_4:
+				controller.selectAction(4);
+				break;
+			case KeyEvent.VK_5:
+				controller.selectAction(5);
+				break;
+			case KeyEvent.VK_6:
+				controller.selectAction(6);
+				break;
+			case KeyEvent.VK_7:
+				controller.selectAction(7);
+				break;
+			case KeyEvent.VK_8:
+				controller.selectAction(8);
+				break;
+			case KeyEvent.VK_9:
+				controller.selectAction(9);
 				break;
 		}
 	}
@@ -56,9 +85,11 @@ public class MainInputHandler extends AbstractInputHandler implements MouseMotio
 			}
 			if (popupShown) {
 				popupShown = false;
-			} else if (tile != null && controller.getSelectedUnit() != null && tile.getUnit() != null && tile.getUnit().getArmy() != controller.getCurrentArmy()) {
-				System.out.println("BOOM!");
-			} else if (tile != null && controller.getSelectedUnit() != null && controller.moveSelectedUnit(tileCoords)) {
+			} else if (tile != null && controller.getSelectedUnit() != null 
+					&& tile.getUnit() != null && controller.getSelectedAction() != null) {
+				controller.selectTarget(tile.getUnit());
+			} else if (tile != null && controller.getSelectedUnit() != null 
+					&& controller.moveSelectedUnit(tileCoords)) {
 			} else if (tile != null && tile.getUnit() != null && tile.getUnit().getArmy() == controller.getCurrentArmy()) {
 				controller.selectUnit(tile.getUnit());
 			} else {

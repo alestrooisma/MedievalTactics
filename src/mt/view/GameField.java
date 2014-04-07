@@ -149,7 +149,7 @@ public class GameField extends Panel {
 		// Draw movement overlay
 		if (c.getSelectedUnit() != null ) {
 			if (distance == 0) {
-				if (c.getSelectedUnit().getMovesRemaining() > 0) {
+				if (c.getSelectedUnit().getMovesRemaining() > 1) {
 					g.setColor(MOVE_COLOR);
 				} else if (c.getSelectedUnit().mayDash()) {
 					g.setColor(DASH_COLOR);

@@ -35,4 +35,13 @@ public class Army {
 	public void removeUnit(Unit unit) {
 		units.remove(unit);
 	}
+	
+	public boolean isEnemy(Army army) {
+		//TODO allies
+		return army != this;
+	}
+	
+	public boolean isEnemy(Unit unit) {
+		return isEnemy(unit.getArmy());
+	}
 }

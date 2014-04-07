@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package mt.controller;
 
 import java.awt.Point;
@@ -11,17 +7,15 @@ import java.util.ListIterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import mt.model.*;
+import mt.model.Action.Status;
 import mt.view.GUI;
 
-/**
- *
- * @author ale
- */
 public class Controller implements Runnable {
-	
+
 	private Model model;
 	private GUI gui;
 	private Unit selectedUnit = null;
+	private Action selectedAction = null;
 	private ListIterator<Unit> unitIterator;
 	// Pending cleanup (i.e. not sure what to do with it)
 	private long turnStartTime;
@@ -100,13 +94,17 @@ public class Controller implements Runnable {
 	}
 
 	public void selectUnit(Unit unit) {
-		if (Flags.CENTER_UPON_SELECT && unit != null) {
-			setCameraPosition(unit.getPosition());
-		}
 		selectedUnit = unit;
+		if (unit != null) {
+			gui.setStatus("Selected " + selectedUnit.getName(), true);
+			if (Flags.CENTER_UPON_SELECT) {
+				setCameraPosition(unit.getPosition());
+			}
+		}
 	}
 
 	public void deselectUnit() {
+		deselectAction();
 		selectedUnit = null;
 	}
 
@@ -122,6 +120,10 @@ public class Controller implements Runnable {
 				moveUnit(selectedUnit, tileCoords);
 				selectedUnit.setMovesRemaining(0);
 				selectedUnit.setHasDashed();
+				selectedUnit.setMayAct(false); //TODO unless special
+				if (!selectedUnit.mayAct()) {
+					nextUnit();
+				}
 				return true;
 			}
 		}
@@ -132,6 +134,54 @@ public class Controller implements Runnable {
 		getMap().getTile(u.getPosition()).removeUnit();
 		u.setPosition(tileCoords);
 		getMap().getTile(tileCoords).setUnit(u);
+	}
+
+	public Action getSelectedAction() {
+		return selectedAction;
+	}
+
+	public void selectAction(Action action) {
+		selectedAction = action;
+		if (getSelectedUnit() != null && action != null) {
+			gui.setStatus("Selected action for " + getSelectedUnit().getName()
+					+ ": " + action.getName(), true);
+			Status status = getSelectedAction().select(getSelectedUnit());
+			if (status == Status.DONE) {
+				deselectAction();
+				selectedUnit.setMovesRemaining(0); //TODO unless special
+				selectedUnit.setMayDash(false); //TODO unless special
+				selectedUnit.setHasActed();
+				if (!selectedUnit.mayDash()) {
+					nextUnit();
+				}
+			} else if (status == Status.NOT_ALLOWED) {
+				deselectAction();
+			}
+		}
+	}
+
+	public void selectAction(int number) {
+		if (getSelectedUnit() != null) {
+			selectAction(getSelectedUnit().getAction(number));
+		}
+	}
+
+	public void deselectAction() {
+		selectedAction = null;
+	}
+
+	public void selectTarget(Unit target) {
+		if (getSelectedAction() != null && target != null) {
+			if (getSelectedAction().target(getSelectedUnit(), target) == Status.DONE) {
+				deselectAction();
+				selectedUnit.setMovesRemaining(0); //TODO unless special
+				selectedUnit.setMayDash(false); //TODO unless special
+				selectedUnit.setHasActed();
+				if (!selectedUnit.mayDash()) {
+					nextUnit();
+				}
+			}
+		}
 	}
 
 	public void endTurn() {

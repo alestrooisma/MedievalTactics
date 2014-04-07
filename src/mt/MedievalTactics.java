@@ -3,7 +3,9 @@ package mt;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import mt.controller.Controller;
+import mt.model.Action;
 import mt.model.Army;
+import mt.model.FireAction;
 import mt.model.Map;
 import mt.model.Model;
 import mt.model.Tile;
@@ -25,14 +27,21 @@ public class MedievalTactics {
 		}
 		Map map = new Map(0, width - 1, 0, height - 1, tiles);
 
-		Army player = new Army("player1");
-		Unit.createUnit(player, 2.5, 3, new Point(4, 7), map);
-		Unit.createUnit(player, 2.5, 3, new Point(5, 7), map);
-		Unit.createUnit(player, 2.5, 3, new Point(8, 7), map);
+		Action fire = new FireAction();
 		
+		Army player = new Army("player1");
+		Unit u = Unit.createUnit("Jon", player, 3, 2.5, new Point(4, 7), map);
+		u.addAction(fire);
+		u = Unit.createUnit("Robb", player, 3, 2.5, new Point(5, 7), map);
+		u.addAction(fire);
+		u = Unit.createUnit("Theon", player, 3, 2.5, new Point(8, 7), map);
+		u.addAction(fire);
+
 		Army enemy = new Army("AI enemy");
-		Unit.createUnit(enemy, 2.5, 3, new Point(3, 1), map);
-		Unit.createUnit(enemy, 2.5, 3, new Point(4, 0), map);
+		u = Unit.createUnit("Tywin", enemy, 3, 2.5, new Point(3, 1), map);
+		u.addAction(fire);
+		u = Unit.createUnit("Jaime", enemy, 3, 2.5, new Point(4, 0), map);
+		u.addAction(fire);
 
 		GUI gui = new GUI();
 		Model model = new Model(map, new Army[]{player, enemy});
