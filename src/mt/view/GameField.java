@@ -22,8 +22,9 @@ public class GameField extends Panel {
 	 * (partially) a settings thing.
 	 */
 	public static final int TILE_SIZE = 72;
-	public static final Color MOVE_COLOR = new Color(0, 0, 1, 0.5f);
-	public static final Color DASH_COLOR = new Color(1, 1, 0, 0.5f);
+	public static final Color MOVE_COLOR = new Color(0, 0.3f, 1, 0.4f);
+	public static final Color DASH_COLOR = new Color(1, 1, 0, 0.4f);
+	public static final Color GRID_COLOR = new Color(0, 0, 0, 0.4f);
 	private long last = System.nanoTime();
 	private double framerate;
 	private double[] framerates = new double[60];
@@ -60,7 +61,7 @@ public class GameField extends Panel {
 
 		Map map = gui.getController().getMap();
 
-		g.setColor(Color.BLACK);
+		g.setColor(GRID_COLOR);
 		g.drawLine(offset.x, 
 				offset.y + (map.getMinY() + map.getMaxY() + 1) * TILE_SIZE, 
 				offset.x + (map.getMinX() + map.getMaxX() + 1) * TILE_SIZE,
@@ -155,22 +156,22 @@ public class GameField extends Panel {
 			if (distance == 0) {
 				if (c.getSelectedUnit().getMovesRemaining() > 1) {
 					g.setColor(MOVE_COLOR);
-					g.fillRect(v, w, TILE_SIZE, TILE_SIZE);
+					g.fillRect(v+1, w+1, TILE_SIZE-1, TILE_SIZE-1);
 				} else if (c.getSelectedUnit().mayDash()) {
 					g.setColor(DASH_COLOR);
-					g.fillRect(v, w, TILE_SIZE, TILE_SIZE);
+					g.fillRect(v+1, w+1, TILE_SIZE-1, TILE_SIZE-1);
 				}
 			} else if (distance <= moveRange) {
 				g.setColor(MOVE_COLOR);
-				g.fillRect(v, w, TILE_SIZE, TILE_SIZE);
+				g.fillRect(v+1, w+1, TILE_SIZE-1, TILE_SIZE-1);
 			} else if (distance <= dashRange) {
 				g.setColor(DASH_COLOR);
-				g.fillRect(v, w, TILE_SIZE, TILE_SIZE);
+				g.fillRect(v+1, w+1, TILE_SIZE-1, TILE_SIZE-1);
 			}
 		}
 
 		// Draw border
-		g.setColor(Color.BLACK);
+		g.setColor(GRID_COLOR);
 		g.drawLine(v, w, v + TILE_SIZE-1, w);
 		g.drawLine(v, w, v, w + TILE_SIZE-1);
 
