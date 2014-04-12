@@ -21,9 +21,9 @@ public class GameField extends Panel {
 	 * The width and height of a tile. TODO: where to define size? Probably
 	 * (partially) a settings thing.
 	 */
-	public static final int TILE_SIZE = 100;
-	public static final Color MOVE_COLOR = new Color(0, 0, 1, 0.7f);
-	public static final Color DASH_COLOR = new Color(1, 1, 0, 0.7f);
+	public static final int TILE_SIZE = 72;
+	public static final Color MOVE_COLOR = new Color(0, 0, 1, 0.5f);
+	public static final Color DASH_COLOR = new Color(1, 1, 0, 0.5f);
 	private long last = System.nanoTime();
 	private double framerate;
 	private double[] framerates = new double[60];
@@ -61,9 +61,14 @@ public class GameField extends Panel {
 		Map map = gui.getController().getMap();
 
 		g.setColor(Color.BLACK);
-		g.drawRect(offset.x - 1, offset.y - 1,
-				(map.getMinX() + map.getMaxX() + 1) * TILE_SIZE + 1,
-				(map.getMinY() + map.getMaxY() + 1) * TILE_SIZE + 1);
+		g.drawLine(offset.x, 
+				offset.y + (map.getMinY() + map.getMaxY() + 1) * TILE_SIZE, 
+				offset.x + (map.getMinX() + map.getMaxX() + 1) * TILE_SIZE,
+				offset.y + (map.getMinY() + map.getMaxY() + 1) * TILE_SIZE);
+		g.drawLine(offset.x + (map.getMinX() + map.getMaxX() + 1) * TILE_SIZE,
+				offset.y,
+				offset.x + (map.getMinX() + map.getMaxX() + 1) * TILE_SIZE,
+				offset.y + (map.getMinY() + map.getMaxY() + 1) * TILE_SIZE);
 
 		int vOffset = -offset.x;
 		int wOffset = -offset.y;
@@ -143,28 +148,31 @@ public class GameField extends Panel {
 		}
 
 		// Draw terrain background
-		g.setColor(Color.GRAY);
-		g.fillRect(v, w, TILE_SIZE, TILE_SIZE);
+		drawImage(Resources.grass);
 
 		// Draw movement overlay
-		if (c.getSelectedUnit() != null ) {
+		if (c.getSelectedUnit() != null) {
 			if (distance == 0) {
 				if (c.getSelectedUnit().getMovesRemaining() > 1) {
 					g.setColor(MOVE_COLOR);
+					g.fillRect(v, w, TILE_SIZE, TILE_SIZE);
 				} else if (c.getSelectedUnit().mayDash()) {
 					g.setColor(DASH_COLOR);
+					g.fillRect(v, w, TILE_SIZE, TILE_SIZE);
 				}
 			} else if (distance <= moveRange) {
 				g.setColor(MOVE_COLOR);
+				g.fillRect(v, w, TILE_SIZE, TILE_SIZE);
 			} else if (distance <= dashRange) {
 				g.setColor(DASH_COLOR);
+				g.fillRect(v, w, TILE_SIZE, TILE_SIZE);
 			}
 		}
-		g.fillRect(v, w, TILE_SIZE, TILE_SIZE);
-		g.setColor(Color.BLACK);
 
 		// Draw border
-		drawImage(Resources.tileborder);
+		g.setColor(Color.BLACK);
+		g.drawLine(v, w, v + TILE_SIZE-1, w);
+		g.drawLine(v, w, v, w + TILE_SIZE-1);
 
 		// Draw top unit
 		if (tile.getUnit() != null) {

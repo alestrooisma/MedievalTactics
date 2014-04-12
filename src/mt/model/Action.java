@@ -34,9 +34,9 @@ public abstract class Action {
 		}
 	}
 	
-	public abstract Status uponSelection(Unit actor);
+	protected abstract Status uponSelection(Unit actor);
 	
-	public abstract Status uponTargeting(Unit actor, Unit target);
+	protected abstract Status uponTargeting(Unit actor, Unit target);
 	
 	public boolean isAllowed(Unit actor) {
 		return true;
